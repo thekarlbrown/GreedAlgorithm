@@ -10,11 +10,16 @@ public class GreedAlgorithm {
 
     public double CalculateRoundResult() throws Exception
     {
+        // Check to make sure a configuration is present before we run the Algorithm
         if (CurrentConfiguration == null)
         {
             throw new Exception("There is no Greed configuration present. Please create one somehow.");
         }
 
+        // Set the starting dice and points, then roll forever until of the three conditions are met
+        // Condition 1: We don't roll any points and the round ends
+        // Condition 2: We decide that we do not want to roll any more based on the Configuration and earn the points
+        // Condition 3: We score points and roll again with the remaining dice
         int diceToRoll = 5;
         double currentPoints = 0;
         while (true)
@@ -35,15 +40,23 @@ public class GreedAlgorithm {
 
     }
 
+    /*
+    Simulate a single roll of the dice, specifying the number of dice to roll and the points scored thus far
+    in the round so that the Algorithm has the necessary information to make decisions on what to do
+     */
     private RollResult GreedRoll (int diceRemaining, double previousPoints)
     {
+        // Create our dice roll
         int[] rolledDice = CreateDiceRoll(diceRemaining);
+        // Exit if we haven't scored on our roll
         if (!HasScoringDice(rolledDice))
         {
             return new RollResult(0, 0, false);
         }
+        // Calculate our points and dice remaining from the roll
         RollResult current = CalculateDicePointsAndRemainingDice(rolledDice);
         double currentPoints = previousPoints + current.PointsScored;
+        // Apply the logic based on the GreedConfiguration to determine if we continue rolling
         current = DetermineIfWeContinueRolling(rolledDice, current, currentPoints);
         return current;
     }
@@ -303,18 +316,4 @@ public class GreedAlgorithm {
         }
     }
 
-}
-
-class RollResult
-{
-    int DiceToRoll;
-    double PointsScored;
-    boolean ContinueRolling;
-
-    public RollResult (int diceToRoll, double pointsScored, boolean continueRolling)
-    {
-        DiceToRoll = diceToRoll;
-        PointsScored = pointsScored;
-        ContinueRolling = continueRolling;
-    }
 }
